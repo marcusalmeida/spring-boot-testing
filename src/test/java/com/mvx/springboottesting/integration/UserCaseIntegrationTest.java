@@ -12,6 +12,9 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
 
+import static io.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = SpringBootTestingApplication.class,
@@ -28,7 +31,13 @@ public class UserCaseIntegrationTest {
     @Test
     @Tag("integration")
     void allUsers() {
-        assertTrue(
-                this.restTemplate.getForObject("http://localhost:"+port+"/users", ArrayList.class).size() == 2);
+        when()
+                .get("http://localhost:"+port+"/users")
+                .then()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("[0].name", equalTo("Ana"))
+                .body("[1].name", equalTo("Bob"));
+
     }
 }
